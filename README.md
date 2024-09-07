@@ -1,4 +1,4 @@
-# TEMPLATE-PROJECT-NAME
+# Test Bench Fixture
 
 *[Description goes here]*
 
@@ -16,4 +16,4 @@
 
 ## License
 
-The `TEMPLATE-GEM-NAME` library is released under the [MIT License](MIT-License.txt).
+The `test_bench-fixture` library is released under the [MIT License](MIT-License.txt).
