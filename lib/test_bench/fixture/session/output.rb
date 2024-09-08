@@ -406,8 +406,11 @@ module TestBench
           end
 
           def self.default
-            policy = ENV.fetch('TEST_BENCH_DETAIL') do
-              return default!
+            policy = ENV.fetch('TEST_FIXTURE_DETAIL') do
+              ## Remove when no longer needed - Nathan, Sat Sep 7 2024
+              ENV.fetch('TEST_BENCH_DETAIL') do
+                return default!
+              end
             end
 
             policy.to_sym

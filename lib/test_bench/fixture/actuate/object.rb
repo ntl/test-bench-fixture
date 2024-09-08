@@ -72,7 +72,7 @@ module TestBench
 
           if not target.const_defined?(:Fixture, false)
             false
-          elsif target.const_get(:Fixture) == TestBench::Fixture
+          elsif target.const_get(:Fixture) == Fixture
             false
           else
             true
