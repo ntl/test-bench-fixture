@@ -7,11 +7,11 @@ module TestBench
 
           extend self
 
-          def self.get(text, indent_style=nil)
-            assure_indent_style(indent_style, text)
+          def self.get(text, heading, indent_style=nil)
+            assure_indent_style(indent_style, text, heading)
           end
 
-          def self.assure_indent_style(indent_style, text=nil)
+          def self.assure_indent_style(indent_style, text=nil, heading=nil)
             text ||= ''
 
             case indent_style
@@ -21,7 +21,11 @@ module TestBench
               newline_terminated = text.match?(/\R\z/)
 
               if newline_terminated
-                unstyled
+                if heading.nil?
+                  unstyled
+                else
+                  quote
+                end
               else
                 first_line
               end
