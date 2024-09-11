@@ -12,12 +12,20 @@ module TestBench
     end
     alias :passed? :fixture_passed?
 
-    def comment(...)
-      Fixture.comment(test_session.telemetry, Commented, ...)
+    def comment(heading=nil, text, indent: nil)
+      text = text.to_str
+      heading = heading&.to_str
+      indent_style = indent
+
+      test_session.comment(text, indent_style, heading)
     end
 
-    def detail(...)
-      Fixture.comment(test_session.telemetry, Detailed, ...)
+    def detail(heading=nil, text, indent: nil)
+      text = text.to_str
+      heading = heading&.to_str
+      indent_style = indent
+
+      test_session.detail(text, indent_style, heading)
     end
 
     def assert(result)
@@ -135,49 +143,6 @@ module TestBench
       session = self.test_session
 
       Fixture.(fixture_class_or_object, *, session:, **, &)
-    end
-
-    def self.comment(telemetry, event_class, text, *additional_texts, heading: nil, quote: nil)
-      texts = [text, *additional_texts]
-
-      texts.map! do |text|
-        text.to_str
-      end
-
-      if quote.nil?
-        quote = texts.last.end_with?("\n")
-      end
-
-      if quote
-        if heading.nil?
-          heading = !text.end_with?("\n")
-        end
-      end
-
-      if heading
-        heading = texts.shift
-      else
-        heading = nil
-      end
-
-      if quote
-        text = texts.join
-      else
-        text = texts.first
-      end
-
-      event = event_class.new
-      event.text = text
-      event.quote = quote
-      event.heading = heading
-
-      telemetry.record(event)
-
-      if not quote
-        texts[1..-1].each do |text|
-          comment(telemetry, event_class, text, heading: false, quote: false)
-        end
-      end
     end
 
     def self.output(fixture, styling: nil)

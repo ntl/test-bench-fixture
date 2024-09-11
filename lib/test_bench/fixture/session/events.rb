@@ -16,8 +16,8 @@ module TestBench
         TestFinished = Fixture::Telemetry::Event.define(:title, :result)
         TestSkipped = Fixture::Telemetry::Event.define(:title)
 
-        Commented = Fixture::Telemetry::Event.define(:text, :quote, :heading)
-        Detailed = Fixture::Telemetry::Event.define(:text, :quote, :heading)
+        Commented = Fixture::Telemetry::Event.define(:text, :heading, :indent_style)
+        Detailed = Fixture::Telemetry::Event.define(:text, :heading, :indent_style)
 
         FixtureStarted = Fixture::Telemetry::Event.define(:name)
         FixtureFinished = Fixture::Telemetry::Event.define(:name, :result)

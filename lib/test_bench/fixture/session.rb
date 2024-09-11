@@ -96,12 +96,12 @@ module TestBench
         result
       end
 
-      def detail(text, quote, heading=nil)
-        record_event(Events::Detailed.new(text, quote, heading))
+      def detail(text, indent_style, heading=nil)
+        record_event(Events::Detailed.new(text, heading, indent_style))
       end
 
-      def comment(text, quote, heading=nil)
-        record_event(Events::Commented.new(text, quote, heading))
+      def comment(text, indent_style, heading=nil)
+        record_event(Events::Commented.new(text, heading, indent_style))
       end
 
       def context!(...)

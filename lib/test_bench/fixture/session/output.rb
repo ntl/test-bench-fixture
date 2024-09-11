@@ -216,21 +216,21 @@ module TestBench
           end
 
           text = detailed.text
-          quote = detailed.quote
           heading = detailed.heading
+          indent_style = detailed.indent_style
 
-          comment(text, quote, heading)
+          comment(text, heading, indent_style)
         end
 
         handle Commented do |commented|
           text = commented.text
-          quote = commented.quote
           heading = commented.heading
+          indent_style = commented.indent_style
 
-          comment(text, quote, heading)
+          comment(text, heading, indent_style)
         end
 
-        def comment(text, quote, heading)
+        def comment(text, heading, indent_style)
           if not heading.nil?
             writer.
               indent.
@@ -252,28 +252,41 @@ module TestBench
             return
           end
 
-          if not quote
-            writer.
-              indent.
-              puts(text)
+          indent_style = IndentStyle.get(text, indent_style)
+
+          text_lines = text.lines(chomp: true)
+
+          case indent_style
+          when IndentStyle.quote
+            get_marker = proc { '> ' }
+          when IndentStyle.line_number
+            line_number_width = text_lines.count.to_s.length
+            marker_width = line_number_width + 2
+
+            get_marker = proc { |line_number|
+              "#{line_number}.".ljust(marker_width)
+            }
+
           else
-            text.each_line(chomp: true) do |line|
-              writer.
-                indent
+            get_marker = proc { '' }
+          end
 
-              if writer.styling?
-                writer.
-                  style(:white_bg).
-                  print(' ').
-                  style(:reset_bg).
-                  print(' ')
-              else
-                writer.
-                  print('> ')
+          text_lines.each.with_index(1) do |text_line, line_number|
+            if not indent_style == IndentStyle.off
+              if line_number == 1 || indent_style != IndentStyle.first_line
+                writer.indent
               end
-
-              writer.puts(line)
             end
+
+            marker = get_marker.(line_number)
+            if not marker.empty?
+              writer.
+                style(:faint).
+                print(marker).
+                style(:reset_intensity)
+            end
+
+            writer.puts(text_line)
           end
         end
 
@@ -349,6 +362,10 @@ module TestBench
           Detail.detail?(detail_policy, mode)
         end
 
+        def indent_style(text, policy=nil)
+          IndentStyle.get(text, policy)
+        end
+
         module Mode
           def self.initial
             :initial
@@ -364,60 +381,6 @@ module TestBench
 
           def self.failing
             :failing
-          end
-        end
-
-        module Detail
-          Error = Class.new(RuntimeError)
-
-          def self.detail?(policy, mode)
-            assure_detail(policy, mode)
-          end
-
-          def self.assure_detail(policy, mode=nil)
-            mode ||= Mode.initial
-
-            case policy
-            when on
-              true
-            when off
-              false
-            when failure
-              if mode == Mode.failing || mode == Mode.initial
-                true
-              else
-                false
-              end
-            else
-              raise Error, "Unknown detail policy #{policy.inspect}"
-            end
-          end
-
-          def self.on
-            :on
-          end
-
-          def self.off
-            :off
-          end
-
-          def self.failure
-            :failure
-          end
-
-          def self.default
-            policy = ENV.fetch('TEST_FIXTURE_DETAIL') do
-              ## Remove when no longer needed - Nathan, Sat Sep 7 2024
-              ENV.fetch('TEST_BENCH_DETAIL') do
-                return default!
-              end
-            end
-
-            policy.to_sym
-          end
-
-          def self.default!
-            :failure
           end
         end
 
