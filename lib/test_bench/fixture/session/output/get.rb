@@ -6,7 +6,7 @@ module TestBench
           Error = Class.new(RuntimeError)
 
           def self.call(substitute_session, styling: nil)
-            styling = true if styling.nil?
+            styling ||= false
 
             if not substitute_session.respond_to?(:sink)
               raise Error, "Not a substitute session"
