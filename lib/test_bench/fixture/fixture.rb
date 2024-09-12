@@ -1,6 +1,6 @@
 module TestBench
   module Fixture
-    include Session::Events
+    include Events
 
     def test_session
       @test_session ||= Session::Substitute.build
@@ -148,7 +148,7 @@ module TestBench
     def self.output(fixture, styling: nil)
       session = fixture.test_session
 
-      Session::Output::Get.(session, styling:)
+      Session::GetOutput.(session, styling:)
     end
 
     def self.call(fixture_class_or_object, ...)
